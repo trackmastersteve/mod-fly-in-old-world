@@ -3,7 +3,7 @@ import sys
 
 input_file = 'AreaTable.dbc'
 output_file = 'AreaTable_patched.dbc'
-FLYING_FLAG = 512  # Hex 0x200
+FLYING_FLAG = 17408  # Hex 0x4400 (Applies both Outland flying flags)
 
 try:
     with open(input_file, 'rb') as f:
