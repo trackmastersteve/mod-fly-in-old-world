@@ -37,10 +37,12 @@ Place it in the same directory as the included patch-dbc-for-flying.py script.
 
 Run the Python script to automatically adjust the flight flags for Eastern Kingdoms and Kalimdor.
 
-Pack the modified AreaTable.dbc file into a new custom patch archive (e.g., patch-5.MPQ) inside a DBFilesClient folder.
+Pack the modified AreaTable.dbc file into a new custom patch archive (e.g., patch-W.MPQ) inside a DBFilesClient folder.
+
+(when packing the DBC files using Ladik's MPQ Editor, the file properties must have their Locale set to Neutral (0), otherwise the client will silently reject the patch.)
 
 ### Applying the Patch
-Place your newly created patch-5.MPQ into your World of Warcraft Data folder.
+Place your newly created patch-W.MPQ into your World of Warcraft Data folder.
 
 Crucial: Delete the Cache folder in your World of Warcraft root directory. If you skip this step, the client will load old DBC data and your mounts will stay grounded.
 
