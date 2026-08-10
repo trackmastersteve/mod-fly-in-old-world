@@ -1,9 +1,5 @@
-# Short Overview (for AzerothCore-Catalouge)
-
-* Name: mod-fly-in-old-world
-* What it does: This Module allows to control which players can fly in the old world (Eastern Kingdom + Kalimdor)
-
-## Overview
+# Overview (for AzerothCore-Catalouge)
+Name: mod-fly-in-old-world
 This module for AzerothCore allows server administrators to control which players can use flying mounts in the Old World (Eastern Kingdoms and Kalimdor). It operates similarly to the "Cold Weather Flying" or "Flight Master's License" mechanics, requiring players to learn a specific spell before they are permitted to take off in vanilla zones.
 
 ## Features
@@ -14,13 +10,12 @@ Automated Database Injection: Includes pre-configured SQL data in the data/sql/b
 Client-Side Automation: Contains an included Python script (patch-dbc-for-flying.py) to easily modify the required client database files without manual hex editing.
 
 ## 1. Server-Side Installation
-Clone the Repository
+### Clone the Repository
 Navigate to your AzerothCore modules directory and clone this repository:
 
-```
-cd into the modules folder
-git clone this mod-fly-in-old-world module
-```
+navigate into the `modules` folder
+`git clone` this mod-fly-in-old-world module
+
 Recompile the Server
 Because this module includes custom C++ logic, you must recompile your worldserver. Run your standard CMake build process (or your preferred Docker build script/manager) to inject the source code into your core.
 
