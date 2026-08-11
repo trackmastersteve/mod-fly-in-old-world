@@ -97,8 +97,8 @@ def patch_dbc_for_flying(
 
     new_spell_string_block_size = len(spell_strings)
 
-    # Map description pointer fields in 3.3.5a layout
-    for desc_field_offset in range(136, 200, 4):
+    # Overwrite all localized description pointer fields (spanning 136 to 208) to force the custom text
+    for desc_field_offset in range(136, 208, 4):
         struct.pack_into("<I", found_spell_record, desc_field_offset, desc_offset)
 
     spell_records.extend(found_spell_record)
