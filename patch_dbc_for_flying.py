@@ -85,7 +85,7 @@ def patch_dbc_for_flying(
         print(f"Error: Could not find spell ID {target_spell_id} in Spell.dbc!")
         return
 
-    # Update spell ID to custom spell ID 200001
+# Update spell ID to custom spell ID 200001
     struct.pack_into("<I", found_spell_record, 0, new_spell_id)
 
     # Append new name and description strings to spell string block
@@ -97,10 +97,13 @@ def patch_dbc_for_flying(
 
     new_spell_string_block_size = len(spell_strings)
 
-    # Overwrite all localized description pointer fields (spanning 136 to 208) to force the custom text
+    # Write the name pointer into the primary name field slot (offset 4 in 3.3.5a Spell.dbc)
+    struct.pack_into("<I", found_spell_record, 4, name_offset)
+
+    # Overwrite all localized description pointer fields (spanning 136 to 208)
     for desc_field_offset in range(136, 208, 4):
         struct.pack_into("<I", found_spell_record, desc_field_offset, desc_offset)
-
+    
     spell_records.extend(found_spell_record)
     new_spell_record_count = s_record_count + 1
 
