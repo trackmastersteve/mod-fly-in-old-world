@@ -1,50 +1,55 @@
-# Overview (for AzerothCore-Catalouge)
-Name: mod-fly-in-old-world
-This module for AzerothCore allows server administrators to control which players can use flying mounts in the Old World (Eastern Kingdoms and Kalimdor). It operates similarly to the "Cold Weather Flying" or "Flight Master's License" mechanics, requiring players to learn a specific spell before they are permitted to take off in vanilla zones.
+# Mod - Fly in Old World
+This module enables flying mounts in older expansion zones (Azeroth) for World of Warcraft (3.3.5a / AzerothCore). It provides custom items, spell mappings, and vendor integrations so players can purchase and learn old-world flight.
 
-## Features
-Controlled Access: Restricts Old World flying behind a custom learnable spell (Default Spell ID: 200001).
+## Prerequisites & Requirements
+AzerothCore server environment (running and operational).
 
-Automated Database Injection: Includes pre-configured SQL data in the data/sql/base/ directory to automatically add the custom spell to flight trainers in Dalaran, Honor Hold, and Thrallmar.
+World of Warcraft 3.3.5a Client.
 
-Client-Side Automation: Contains an included Python script (patch-dbc-for-flying.py) to easily modify the required client database files without manual hex editing.
+Python 3 (for executing the DBC patching utility).
 
-## 1. Server-Side Installation
-### Clone the Repository
-Navigate to your AzerothCore modules directory and clone this repository.
+Database management tool (like MySQL Workbench, phpMyAdmin, or terminal CLI).
 
-### Recompile the Server
-Because this module includes custom C++ logic, you must recompile your worldserver. Run your standard CMake build process (or your preferred Docker build script/manager) to inject the source code into your core.
+## Installation & Setup Guide
+### Step 1: Clone the Module into Your Server
+* Navigate to your AzerothCore modules directory (typically located at `azerothcore-wotlk/modules/`):
 
-The module's database files (trainer data) will be automatically injected into your acore_world database the next time you run the database assembler or start your server.
+```
+cd azerothcore-wotlk/modules/
+```
 
-### Configuration
-Navigate to your server's etc/modules/ directory.
+* Clone or place this repository folder (`mod-fly-in-old-world`) directly into your modules directory.
 
-Copy the template file: cp mod_fly_in_old_world.conf.dist mod_fly_in_old_world.conf
+### Step 2: Apply the Server Database SQL Files
+* Execute the provided SQL installation script against your world database (`acore_world`) to register the custom item template and add it to vendor inventories (such as Hira Snowdawn and Grunda Bronzewing):
 
-Open the configuration file and ensure the module is enabled: FlyInOldWorld.Enable = 1
+```
+docker compose exec -T ac-database mysql -u acore -p acore_world < path/to/mod-fly-in-old-world/sql/your_script.sql
+```
+(Alternatively, run the SQL statements manually using your preferred database GUI client).
 
-(Note: If you wish to use a different Spell ID, such as standard Cold Weather Flying (54197), you must edit the OLD_WORLD_FLYING_SPELL variable in src/FlyInOldWorld.cpp before compiling).
+### Step 3: Generate Client-Side DBC Patches
+Because client items and spell tooltips require local rendering adjustments, you must patch your client DBC files:
 
-## 2. Client-Side Installation
-For the game client to physically allow vertical Z-axis movement in the Old World, you must patch the client's AreaTable.dbc file. The server will handle the spell requirements, but the client must render the 3D flight space.
+* Ensure your extracted base `Item.dbc` and `Spell.dbc` files are placed in your working directory.
 
-### Patching the DBC
-Extract AreaTable.dbc from your client's local MPQ archives.
+* Run the included patching script to generate your custom item ID (`900002`), bind the proper book display ID (`61330`), apply the heirloom quality coloring, and inject the custom Azeroth flight description:
 
-Place it in the same directory as the included patch-dbc-for-flying.py script.
+```
+python3 patch-dbc-for-flying.py
+```
+This will generate the updated `Item.dbc` and `Spell.dbc` files.
 
-Run the Python script to automatically adjust the flight flags for Eastern Kingdoms and Kalimdor.
+### Step 4: Package and Install the Client Patch
+* Create or update your custom MPQ patch file (e.g., `patch-Z.mpq`) using an MPQ editor.
 
-Pack the modified AreaTable.dbc file into a new custom patch archive (e.g., patch-W.MPQ) inside a DBFilesClient folder.
+* Place the newly generated `Item.dbc` and `Spell.dbc` inside the `DBFilesClient/` folder structure within your MPQ archive.
 
-(when packing the DBC files using Ladik's MPQ Editor, the file properties must have their Locale set to Neutral (0), otherwise the client will silently reject the patch.)
+* Drop the `patch-Z.mpq` file into your World of Warcraft client’s `Data/` (or `Data/enUS/`) directory.
 
-### Applying the Patch
-Place your newly created patch-W.MPQ into your World of Warcraft Data folder.
+### Step 5: Clear Cache and Launch
+Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
 
-Crucial: Delete the Cache folder in your World of Warcraft root directory. If you skip this step, the client will load old DBC data and your mounts will stay grounded.
+Restart your AzerothCore server container/services.
 
-## Usage In-Game
-Once the server is running and the client is patched, players simply need to visit a flight trainer in Outland or Northrend, purchase the custom flight license, and mount up in any vanilla zone.
+Launch your game client, visit the vendor, and verify your custom Tome of Old World Flight!
