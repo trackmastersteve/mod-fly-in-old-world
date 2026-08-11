@@ -41,11 +41,11 @@ python3 patch-dbc-for-flying.py
 This will generate the updated `Item.dbc` and `Spell.dbc` files.
 
 ### Step 4: Package and Install the Client Patch
-* Create or update your custom MPQ patch file (e.g., `patch-Z.mpq`) using an MPQ editor.
+* Create or update your custom MPQ patch file (e.g., `patch-W.mpq`) using an MPQ editor.
 
 * Place the newly generated `Item.dbc` and `Spell.dbc` inside the `DBFilesClient/` folder structure within your MPQ archive.
 
-* Drop the `patch-Z.mpq` file into your World of Warcraft client’s `Data/` (or `Data/enUS/`) directory.
+* Drop the `patch-W.mpq` file into your World of Warcraft client’s `Data/` (or `Data/enUS/`) directory.
 
 ### Step 5: Clear Cache and Launch
 Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
