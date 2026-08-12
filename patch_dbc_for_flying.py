@@ -7,7 +7,7 @@ def patch_dbc_for_flying(
     target_item_id=49177, 
     new_item_id=900002, 
     book_display_id=61330,
-    target_spell_id=48399,
+    target_spell_id=33392,  # Swapped to Expert Riding as a clean base
     new_spell_id=200001,
     new_spell_name="Old World Flying",
     new_spell_desc="Allows the player to ride flying mounts in Azeroth."
@@ -43,7 +43,6 @@ def patch_dbc_for_flying(
         print(f"Error: Could not find item ID {target_item_id} in Item.dbc!")
         return
 
-    # Overwrite ID to 900002 and set display ID to book graphic (61330)
     struct.pack_into("<I", item_records, found_item_offset, new_item_id)
     struct.pack_into("<I", item_records, found_item_offset + 4, book_display_id)
 
@@ -55,7 +54,7 @@ def patch_dbc_for_flying(
         f.write(item_records)
         f.write(item_strings)
     
-    print(f"Successfully patched Item.dbc: Item {target_item_id} -> {new_item_id} (Display ID: {book_display_id})")
+    print(f"Successfully patched Item.dbc: Item {target_item_id} -> {new_item_id}")
 
     # ---------------------------------------------------------
     # 2. PATCH SPELL.DBC
@@ -85,10 +84,8 @@ def patch_dbc_for_flying(
         print(f"Error: Could not find spell ID {target_spell_id} in Spell.dbc!")
         return
 
-# Update spell ID to custom spell ID 200001
     struct.pack_into("<I", found_spell_record, 0, new_spell_id)
 
-    # Append new name and description strings to spell string block
     name_offset = len(spell_strings)
     spell_strings.extend(new_spell_name.encode('utf-8') + b'\x00')
     
@@ -97,13 +94,11 @@ def patch_dbc_for_flying(
 
     new_spell_string_block_size = len(spell_strings)
 
-    # Write the name pointer into the primary name field slot (offset 4 in 3.3.5a Spell.dbc)
     struct.pack_into("<I", found_spell_record, 4, name_offset)
 
-    # Overwrite all localized description pointer fields (spanning 136 to 208)
     for desc_field_offset in range(136, 208, 4):
         struct.pack_into("<I", found_spell_record, desc_field_offset, desc_offset)
-    
+
     spell_records.extend(found_spell_record)
     new_spell_record_count = s_record_count + 1
 
@@ -115,7 +110,7 @@ def patch_dbc_for_flying(
         f.write(spell_records)
         f.write(spell_strings)
 
-    print(f"Successfully patched Spell.dbc: Spell {target_spell_id} -> {new_spell_id} with custom description.")
+    print(f"Successfully patched Spell.dbc: Spell {target_spell_id} -> {new_spell_id} using clean base.")
 
 if __name__ == "__main__":
     patch_dbc_for_flying()
