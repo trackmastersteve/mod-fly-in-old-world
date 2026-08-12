@@ -10,13 +10,12 @@ INSERT INTO item_template (
     maxcount, stackable, bonding, spellid_1, spelltrigger_1, 
     spellcharges_1, VerifiedBuild
 ) VALUES (
-    900002, 13, 0, 'Tome of Old World Flight', 61330, 7, 
+    900002, 15, 0, 'Tome of Old World Flight', 61330, 7, 
     1, 5000000, 100000, 0, 
     -1, -1, 0, 60, 
-    1, 0, 0, 200001, 0, 
-    -1, NULL
+    1, 1, 0, 200001, 0, 
+    0, NULL
 );
-
 -- ---------------------------------------------------------------------------
 -- Spell Script Mapping
 -- ---------------------------------------------------------------------------
