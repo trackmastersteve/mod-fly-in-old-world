@@ -37,7 +37,7 @@ class TomeOfOldWorldFlightScript : public ItemScript
 public:
     TomeOfOldWorldFlightScript() : ItemScript("TomeOfOldWorldFlightScript") { }
 
-    bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/) override
+    bool OnItemUse(Player* player, Item* item, SpellCastTargets const& /*targets*/) override
     {
         if (player->HasSpell(OLD_WORLD_FLYING_SPELL))
         {
