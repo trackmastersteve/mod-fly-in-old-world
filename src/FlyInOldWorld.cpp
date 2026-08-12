@@ -54,12 +54,12 @@ public:
 
             if (player->HasSpell(OLD_WORLD_FLYING_SPELL))
             {
-                player->SendSysMessage("You already know Old World Flying.");
+                player->SendSystemMessage("You already know Old World Flying.");
                 return;
             }
 
             player->LearnSpell(OLD_WORLD_FLYING_SPELL, false);
-            player->SendSysMessage("You have successfully learned Old World Flying!");
+            player->SendSystemMessage("You have successfully learned Old World Flying!");
         }
 
         void Register() override
