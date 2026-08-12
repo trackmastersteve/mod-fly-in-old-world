@@ -7,7 +7,7 @@ def patch_dbc_for_flying(
     target_item_id=49177, 
     new_item_id=900002, 
     book_display_id=61330,
-    target_spell_id=33392,  # Swapped to Expert Riding as a clean base
+    target_spell_id=48399,  # Cold Weather Flying base
     new_spell_id=200001,
     new_spell_name="Old World Flying",
     new_spell_desc="Allows the player to ride flying mounts in Azeroth."
@@ -84,8 +84,13 @@ def patch_dbc_for_flying(
         print(f"Error: Could not find spell ID {target_spell_id} in Spell.dbc!")
         return
 
+    # Update spell ID to 200001
     struct.pack_into("<I", found_spell_record, 0, new_spell_id)
 
+    # Lower the required SpellLevel (offset 156 in 3.3.5a Spell.dbc) from 68 down to 60
+    struct.pack_into("<I", found_spell_record, 156, 60)
+
+    # Append new name and description strings
     name_offset = len(spell_strings)
     spell_strings.extend(new_spell_name.encode('utf-8') + b'\x00')
     
@@ -94,8 +99,10 @@ def patch_dbc_for_flying(
 
     new_spell_string_block_size = len(spell_strings)
 
+    # Map name pointer
     struct.pack_into("<I", found_spell_record, 4, name_offset)
 
+    # Map description pointers
     for desc_field_offset in range(136, 208, 4):
         struct.pack_into("<I", found_spell_record, desc_field_offset, desc_offset)
 
@@ -110,7 +117,7 @@ def patch_dbc_for_flying(
         f.write(spell_records)
         f.write(spell_strings)
 
-    print(f"Successfully patched Spell.dbc: Spell {target_spell_id} -> {new_spell_id} using clean base.")
+    print(f"Successfully patched Spell.dbc: Spell {target_spell_id} -> {new_spell_id} (Level lowered to 60).")
 
 if __name__ == "__main__":
     patch_dbc_for_flying()
