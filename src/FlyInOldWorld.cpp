@@ -4,14 +4,14 @@
 
 #include "ScriptMgr.h"
 #include "Player.h"
-#include "Item.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
 
 enum {
-    OLD_WORLD_FLYING_SPELL = 200001,
-    OLD_WORLD_FLYING_ITEM   = 900002
+    OLD_WORLD_FLYING_SPELL = 200001
 };
 
-// Add player scripts for zone flight permissions
+// Player script for zone flight permissions
 class FlyInOldWorld : public PlayerScript
 {
 public:
@@ -31,23 +31,52 @@ public:
     }
 };
 
-// Item script to handle right-clicking the tome without client spell casting restrictions
-class TomeOfOldWorldFlightScript : public ItemScript
+// Spell script to handle learning the ability when the tome spell is triggered
+class spell_tome_of_old_world_flight : public SpellScriptLoader
 {
 public:
-    TomeOfOldWorldFlightScript() : ItemScript("TomeOfOldWorldFlightScript") { }
+    spell_tome_of_old_world_flight() : SpellScriptLoader("spell_tome_of_old_world_flight") { }
 
-    bool OnUse(Player* player, Item* item, SpellCastTargets const* /*targets*/) override
+    class spell_tome_of_old_world_flight_SpellScript : public SpellScript
     {
-        if (player->HasSpell(OLD_WORLD_FLYING_SPELL))
+        PrepareSpellScript(spell_tome_of_old_world_flight_SpellScript);
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            player->SendSysMessage("You already know Old World Flying.");
-            return false;
+            return true;
         }
 
-        player->LearnSpell(OLD_WORLD_FLYING_SPELL, false);
-        player->SendSysMessage("You have successfully learned Old World Flying!");
-        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
-        return true;
+        void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+        {
+            Player* player = GetCaster()->ToPlayer();
+            if (!player)
+                return;
+
+            if (player->HasSpell(OLD_WORLD_FLYING_SPELL))
+            {
+                player->SendSysMessage("You already know Old World Flying.");
+                return;
+            }
+
+            player->LearnSpell(OLD_WORLD_FLYING_SPELL, false);
+            player->SendSysMessage("You have successfully learned Old World Flying!");
+        }
+
+        void Register() override
+        {
+            OnEffectHit += SpellEffectFn(spell_tome_of_old_world_flight_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_tome_of_old_world_flight_SpellScript();
     }
 };
+
+// Add all scripts
+void AddFlyInOldWorld()
+{
+    new FlyInOldWorld();
+    new spell_tome_of_old_world_flight();
+}
