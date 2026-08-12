@@ -58,7 +58,7 @@ public:
                 return;
             }
 
-            player->LearnSpell(OLD_WORLD_FLYING_SPELL, false);
+            player->learnSpell(OLD_WORLD_FLYING_SPELL, false);
             player->SendSystemMessage("You have successfully learned Old World Flying!");
         }
 
