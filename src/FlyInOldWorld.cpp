@@ -7,7 +7,8 @@
 #include "Item.h"
 
 enum {
-    OLD_WORLD_FLYING_SPELL = 200001
+    OLD_WORLD_FLYING_SPELL = 200001,
+    VISUAL_READING_SPELL   = 7355 // Generic visual book reading aura
 };
 
 // Player script for zone flight permissions
@@ -44,8 +45,13 @@ public:
             return false; 
         }
 
-        // Force teach the spell and destroy the item natively
-        player->learnSpell(OLD_WORLD_FLYING_SPELL, false);
+        // 1. Play the visual reading animation
+        player->CastSpell(player, VISUAL_READING_SPELL, true);
+
+        // 2. Silently add the spell directly to the database to avoid DBC string broadcast errors ("Soulstorm")
+        player->addSpell(OLD_WORLD_FLYING_SPELL, 1, true, false, false);
+        
+        // 3. Print our custom success message and destroy the Tome
         player->SendSystemMessage("You have successfully learned Old World Flying!");
         player->DestroyItemCount(item->GetEntry(), 1, true);
 
