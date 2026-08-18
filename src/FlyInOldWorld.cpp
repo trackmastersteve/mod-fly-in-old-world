@@ -46,10 +46,11 @@ public:
             return true;
         }
 
-        void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+        // Uncomment effIndex so it can be passed to the block function
+        void HandleScriptEffect(SpellEffIndex effIndex)
         {
             // Block the core engine from natively processing the cloned learn effect
-            PreventDefaultAction(); 
+            PreventHitEffect(effIndex); 
 
             Player* player = GetCaster()->ToPlayer();
             if (!player)
