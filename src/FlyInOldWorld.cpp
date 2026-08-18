@@ -48,6 +48,9 @@ public:
 
         void HandleScriptEffect(SpellEffIndex /*effIndex*/)
         {
+            // Block the core engine from natively processing the cloned learn effect
+            PreventDefaultAction(); 
+
             Player* player = GetCaster()->ToPlayer();
             if (!player)
                 return;
@@ -64,7 +67,8 @@ public:
 
         void Register() override
         {
-            OnEffectHit += SpellEffectFn(spell_tome_of_old_world_flight_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            // Update the hook to listen to the cloned spell's actual effect type
+            OnEffectHit += SpellEffectFn(spell_tome_of_old_world_flight_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_LEARN_SPELL);
         }
     };
 
