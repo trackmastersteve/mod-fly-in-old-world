@@ -39,6 +39,13 @@ docker compose exec -T ac-database mysql -u root -ppassword acore_world < module
 ```
 (Alternatively, run the SQL statements manually using your preferred database GUI client).
 
+### Optional: In-Game GM Commands
+If you wish to manually add the `Tome of Old World Flight` to a specific vendor outside of the default list, log in with a GM account, target the desired vendor NPC, and run the following command in chat:
+
+```
+.npc add item 900002
+```
+
 ### Step 4: Generate Client-Side DBC Patches
 Because the vanilla 3.3.5a client hardcodes map ceilings and spell requirements, you must patch your base DBC files to allow the cast and lift the flight restrictions:
 
