@@ -2,13 +2,15 @@
 This module enables flying mounts in older expansion zones (Azeroth) for World of Warcraft (3.3.5a / AzerothCore). It provides custom items, spell mappings, and vendor integrations so players can purchase and learn old-world flight.
 
 ## Prerequisites & Requirements
-AzerothCore server environment (running and operational).
+* AzerothCore server environment (running and operational).
 
-World of Warcraft 3.3.5a Client.
+* World of Warcraft 3.3.5a Client.
 
-Python 3 (for executing the DBC patching utility).
+* Python 3 (for executing the DBC patching utility).
 
-Database management tool (like MySQL Workbench, phpMyAdmin, or terminal CLI).
+* Database management tool (like MySQL Workbench, phpMyAdmin, or terminal CLI).
+
+* MPQ Editor (e.g., Ladik's MPQ Editor) to package the custom client patch.
 
 ## Installation & Setup Guide
 ### Step 1: Clone the Module into Your Server
@@ -20,38 +22,47 @@ cd azerothcore-wotlk/modules/
 
 * Clone or place this repository folder (`mod-fly-in-old-world`) directly into your modules directory.
 
-### Step 2: Apply the Server Database SQL Files
-* Execute the provided SQL installation script against your world database (`acore_world`) to register the custom item template and add it to vendor inventories (such as Hira Snowdawn and Grunda Bronzewing):
+### Step 2: Compile the Server
+Because this module utilizes a custom WotLK C++ `ItemScript` to bypass the vanilla spell engine, you must recompile your worldserver binary to include the new logic.
+
+If using Docker:
 
 ```
-docker compose exec -T ac-database mysql -u acore -p acore_world < path/to/mod-fly-in-old-world/sql/your_script.sql
+docker compose build ac-worldserver
+```
+
+### Step 3: Apply the Server Database SQL Files
+* Execute the provided SQL installation script against your world database (`acore_world`) to register the custom item template, define the script hooks, and add the Tome to vendor inventories (Hira Snowdawn, Grunda Bronzewing, and Wind Rider Jahubo):
+
+```
+docker compose exec -T ac-database mysql -u root -ppassword acore_world < modules/mod-fly-in-old-world/data/sql/db-world/base/db_world_mod_fly_in_old_world_trainers.sql
 ```
 (Alternatively, run the SQL statements manually using your preferred database GUI client).
 
-### Step 3: Generate Client-Side DBC Patches
-Because client items and spell tooltips require local rendering adjustments, you must patch your client DBC files:
+### Step 4: Generate Client-Side DBC Patches
+Because the vanilla 3.3.5a client hardcodes map ceilings and spell requirements, you must patch your base DBC files to allow the cast and lift the flight restrictions:
 
-* Ensure your extracted base `AreaTable.dbc` and `Spell.dbc` files are placed in your working directory.
+* Ensure your extracted, vanilla `AreaTable.dbc` and `Spell.dbc` files are placed inside a `DBFilesClient` folder next to the python script.
 
-* Run the included patching script to generate your custom item ID (`900002`), bind the proper book display ID (`61330`), apply the heirloom quality coloring, and inject the custom Azeroth flight description:
+* Run the included patching script to apply the Outland flight flags to Eastern Kingdoms/Kalimdor, and to clone the custom spell (`200001`) with WotLK level/skill requirements stripped:
 
 ```
 python3 patch_dbc.py
 ```
 This will generate the updated `AreaTable.dbc` and `Spell.dbc` files.
 
-### Step 4: Package and Install the Client Patch
-* Create or update your custom MPQ patch file (e.g., `patch-W.mpq`) using an MPQ editor.
+### Step 5: Package and Install the Client Patch
+* Create or update your custom MPQ patch file (e.g., `patch-W.mpq`) using your MPQ Editor. Ensure file signatures and attributes are unchecked/disabled when creating the archive.
 
 * Place the newly generated `AreaTable.dbc` and `Spell.dbc` inside the `DBFilesClient/` folder structure within your MPQ archive.
 
-* Drop the `patch-W.mpq` file into your World of Warcraft client’s `Data/` (or `Data/enUS/`) directory.
+* Drop the `patch-W.mpq` file into your World of Warcraft client’s `Data/` directory.
 
-### Step 5: Clear Cache and Launch
-Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
+### Step 6: Clear Cache and Launch
+* Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
 
-Upload the `AreaTable.dbc` and `Spell.dbc` to the server.
+* Copy the freshly patched `AreaTable.dbc` and `Spell.dbc` files to your server's mapped `Data/dbc/` folder so the server shares the exact same map coordinates as the client.
 
-Restart your AzerothCore server container/services.
+* Restart your AzerothCore server container/services.
 
-Launch your game client, visit the vendor, and verify your custom Tome of Old World Flight!
+* Launch your game client, visit a flight vendor, and enjoy the skies over Azeroth!
