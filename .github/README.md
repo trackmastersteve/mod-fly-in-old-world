@@ -36,19 +36,21 @@ Because client items and spell tooltips require local rendering adjustments, you
 * Run the included patching script to generate your custom item ID (`900002`), bind the proper book display ID (`61330`), apply the heirloom quality coloring, and inject the custom Azeroth flight description:
 
 ```
-python3 patch-dbc-for-flying.py
+python3 patch_dbc.py
 ```
-This will generate the updated `Item.dbc` and `Spell.dbc` files.
+This will generate the updated `AreaTable.dbc` and `Spell.dbc` files.
 
 ### Step 4: Package and Install the Client Patch
 * Create or update your custom MPQ patch file (e.g., `patch-W.mpq`) using an MPQ editor.
 
-* Place the newly generated `Item.dbc` and `Spell.dbc` inside the `DBFilesClient/` folder structure within your MPQ archive.
+* Place the newly generated `AreaTable.dbc` and `Spell.dbc` inside the `DBFilesClient/` folder structure within your MPQ archive.
 
 * Drop the `patch-W.mpq` file into your World of Warcraft client’s `Data/` (or `Data/enUS/`) directory.
 
 ### Step 5: Clear Cache and Launch
 Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
+
+Upload the `AreaTable.dbc` and `Spell.dbc` to the server.
 
 Restart your AzerothCore server container/services.
 
