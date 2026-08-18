@@ -46,7 +46,12 @@ public:
             return true;
         }
 
-        // Uncomment effIndex so it can be passed to the block function
+        // Force the server to accept the cast, bypassing vanilla level/skill checks
+        SpellCastResult CheckCast()
+        {
+            return SPELL_CAST_OK;
+        }
+
         void HandleScriptEffect(SpellEffIndex effIndex)
         {
             // Block the core engine from natively processing the cloned learn effect
@@ -68,7 +73,8 @@ public:
 
         void Register() override
         {
-            // Update the hook to listen to the cloned spell's actual effect type
+            // Hook the CheckCast override and the Effect handler
+            OnCheckCast += SpellCheckCastFn(spell_tome_of_old_world_flight_SpellScript::CheckCast);
             OnEffectHit += SpellEffectFn(spell_tome_of_old_world_flight_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_LEARN_SPELL);
         }
     };
