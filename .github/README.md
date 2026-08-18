@@ -31,7 +31,7 @@ docker compose exec -T ac-database mysql -u acore -p acore_world < path/to/mod-f
 ### Step 3: Generate Client-Side DBC Patches
 Because client items and spell tooltips require local rendering adjustments, you must patch your client DBC files:
 
-* Ensure your extracted base `Item.dbc` and `Spell.dbc` files are placed in your working directory.
+* Ensure your extracted base `AreaTable.dbc` and `Spell.dbc` files are placed in your working directory.
 
 * Run the included patching script to generate your custom item ID (`900002`), bind the proper book display ID (`61330`), apply the heirloom quality coloring, and inject the custom Azeroth flight description:
 
