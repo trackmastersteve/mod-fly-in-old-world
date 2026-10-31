@@ -35,7 +35,7 @@ docker compose build ac-worldserver
 * Execute the provided SQL installation script against your world database (`acore_world`) to register the custom item template, define the script hooks, and add the Tome to vendor inventories (Hira Snowdawn, Grunda Bronzewing, and Wind Rider Jahubo):
 
 ```
-docker compose exec -T ac-database mysql -u root -ppassword acore_world < modules/mod-fly-in-old-world/data/sql/db-world/base/db_world_mod_fly_in_old_world_trainers.sql
+docker compose exec -T ac-database mysql -u root -p[PASSWORD] acore_world < modules/mod-fly-in-old-world/data/sql/db-world/base/db_world_mod_fly_in_old_world_trainers.sql
 ```
 (Alternatively, run the SQL statements manually using your preferred database GUI client).
 
