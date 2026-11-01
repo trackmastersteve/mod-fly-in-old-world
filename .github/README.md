@@ -22,6 +22,8 @@ cd azerothcore-wotlk/modules/
 
 * Clone or place this repository folder (`mod-fly-in-old-world`) directly into your modules directory.
 
+---
+
 ### Step 2: Compile the Server
 Because this module utilizes a custom WotLK C++ `ItemScript` to bypass the vanilla spell engine, you must recompile your worldserver binary to include the new logic.
 
@@ -30,6 +32,8 @@ If using Docker:
 ```
 docker compose build ac-worldserver
 ```
+
+---
 
 ### Step 3: Apply the Server Database SQL Files
 * Execute the provided SQL installation script against your world database (`acore_world`) to register the custom item template, define the script hooks, and add the Tome to vendor inventories (Hira Snowdawn, Grunda Bronzewing, and Wind Rider Jahubo):
@@ -46,6 +50,8 @@ If you wish to manually add the `Tome of Old World Flight` to a specific vendor 
 .npc add item 900002
 ```
 
+---
+
 ### Step 4: Generate Client-Side DBC Patches
 Because the vanilla 3.3.5a client hardcodes map ceilings and spell requirements, you must patch your base DBC files to allow the cast and lift the flight restrictions:
 
@@ -58,12 +64,16 @@ python3 patch_dbc.py
 ```
 This will generate the updated `AreaTable.dbc` and `Spell.dbc` files.
 
+---
+
 ### Step 5: Package and Install the Client Patch
 * Create or update your custom MPQ patch file (e.g., `patch-W.mpq`) using your MPQ Editor. Ensure file signatures and attributes are unchecked/disabled when creating the archive.
 
 * Place the newly generated `AreaTable.dbc` and `Spell.dbc` inside the `DBFilesClient/` folder structure within your MPQ archive.
 
 * Drop the `patch-W.mpq` file into your World of Warcraft client’s `Data/` directory.
+
+---
 
 ### Step 6 (Standard / Manual build): Server-Side Installation
 
@@ -74,8 +84,6 @@ Place the patched `AreaTable.dbc` and `Spell.dbc` files into your server's compi
 
 **2. Restart the worldserver**
 Launch your worldserver executable to load the newly compiled module and the patched old-world flying rules into memory.
-
----
 
 ### Step 6 (Docker): Server-Side Installation
 
@@ -102,7 +110,9 @@ Take the host path (the left side of the output from Step 1) and append `/dbc/` 
 Restart the container so the server dumps the old data and loads the patched old-world flying rules into memory:
 
     docker compose restart ac-worldserver
-    
+ 
+---
+   
 ### Step 7: Clear Cache and Launch
 * Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
 
