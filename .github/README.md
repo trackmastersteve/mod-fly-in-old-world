@@ -65,7 +65,45 @@ This will generate the updated `AreaTable.dbc` and `Spell.dbc` files.
 
 * Drop the `patch-W.mpq` file into your World of Warcraft client’s `Data/` directory.
 
-### Step 6: Clear Cache and Launch
+### Step 6 (Standard / Manual build): Server-Side Installation
+
+If you are running a standard AzerothCore installation directly on your host machine without containers, follow these steps:
+
+**1. Install the modified DBC files**
+Place the patched `AreaTable.dbc` and `Spell.dbc` files into your server's compiled `data/dbc/` directory, overwriting the default files. 
+
+**2. Restart the worldserver**
+Launch your worldserver executable to load the newly compiled module and the patched old-world flying rules into memory.
+
+---
+
+### Step 6 (Docker): Server-Side Installation
+
+If your AzerothCore environment uses Docker, the client data folder is mounted as a **read-only** volume to prevent accidental corruption. Because of this, standard `docker cp` commands will fail. 
+
+To bypass this restriction, you must locate the hidden Docker volume on your host system and copy the modified `.dbc` files directly into it using root privileges.
+
+**1. Locate the hidden Docker volume on the host**
+Run this command from your server's root directory to find exactly where the `data` volume lives on your host machine:
+
+    docker inspect --format='{{range .Mounts}}{{.Source}} -> {{.Destination}}{{"\n"}}{{end}}' $(docker compose ps -q ac-worldserver) | grep data
+
+*Expected output example:* 
+`/var/lib/docker/volumes/wow-server-playerbots_ac-client-data/_data -> /azerothcore/env/dist/data`
+
+**2. Copy the patched DBC files using sudo**
+Take the host path (the left side of the output from Step 1) and append `/dbc/` to the end of it. Use `sudo` to copy your updated files directly to that path:
+
+    # Note: Adjust the destination path if your volume name differs from the example above
+    sudo cp AreaTable.dbc /var/lib/docker/volumes/wow-server-playerbots_ac-client-data/_data/dbc/
+    sudo cp Spell.dbc /var/lib/docker/volumes/wow-server-playerbots_ac-client-data/_data/dbc/
+
+**3. Restart the worldserver**
+Restart the container so the server dumps the old data and loads the patched old-world flying rules into memory:
+
+    docker compose restart ac-worldserver
+    
+### Step 7: Clear Cache and Launch
 * Crucial: Delete your client's local cache folder (`Cache/WDB/`) to force the game client to read the new item names, display icons, and tooltips correctly.
 
 * Copy the freshly patched `AreaTable.dbc` and `Spell.dbc` files to your server's mapped `Data/dbc/` folder so the server shares the exact same map coordinates as the client.
